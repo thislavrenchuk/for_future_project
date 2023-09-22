@@ -41,6 +41,9 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+    // Set Health at full
+    Health = MaxHealth;
+
     // Set up Timeline Component
     FOnTimelineFloat onTimelineCallback;
     FOnTimelineEventStatic onTimelineFinishedCallback;
@@ -113,6 +116,21 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
     EnhancedInputComponent->BindAction(InputConfigData->InputZoom, ETriggerEvent::Started, this, &ABaseCharacter::ZoomIn);
     EnhancedInputComponent->BindAction(InputConfigData->InputZoom, ETriggerEvent::Completed, this, &ABaseCharacter::ZoomOut);
     EnhancedInputComponent->BindAction(InputConfigData->InputShoot, ETriggerEvent::Completed, this, &ABaseCharacter::Shoot);
+}
+
+float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    DamageToApply = FMath::Min(Health, DamageToApply);
+    Health -= DamageToApply;
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("Health: %f"), Health); //TODO remove after debug
+
+    if (Health == 0)
+    {
+        IsDead = true;
+    }
+    
+    return DamageToApply;
 }
 
 void ABaseCharacter::Move(const FInputActionValue& Value)

@@ -31,14 +31,14 @@ void ABow::Shoot()
 	FActorSpawnParameters ActorSpawnParameters;
 	ActorSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	ActorSpawnParameters.bNoFail = false;
-	ActorSpawnParameters.Owner = this->GetOwner();
+	ActorSpawnParameters.Owner = this->GetOwner(); // Set owner of projectile to Character
 	ActorSpawnParameters.Instigator = NULL;
 
     Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileClass, 
 		SkeletalMeshComponent->GetSocketTransform("ProjectileSocket"),
 		ActorSpawnParameters
-		);
+	);
 
 	if (Projectile)
 	{

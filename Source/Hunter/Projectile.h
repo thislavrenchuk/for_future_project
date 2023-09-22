@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Projectile.generated.h"
 
 UCLASS()
@@ -50,6 +51,9 @@ private:
 	// Projectile material
 	UPROPERTY(VisibleDefaultsOnly)
 	UMaterialInstanceDynamic* ProjectileMaterialInstance;
+
+	UPROPERTY(EditAnywhere)
+	float Damage = 10;
 
 	void GetProjectileTransform(FVector &Location, FRotator &Rotation);
 

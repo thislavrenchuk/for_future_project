@@ -89,7 +89,14 @@ void AProjectile::CreateLineTrace(FVector Location, FRotator Rotation, FHitResul
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel1);
 	if (bSuccess) 
 	{
-		//TODO: maybe add Damage
+		//TODO: apply Damage if actor hit
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor != nullptr) 
+		{
+			FPointDamageEvent DamageEvent(Damage, HitResult, -Rotation.Vector(), nullptr);
+			HitActor->TakeDamage(Damage, DamageEvent, this->GetOwner()->GetInstigatorController(), this);
+		}
 	}
 }
 
