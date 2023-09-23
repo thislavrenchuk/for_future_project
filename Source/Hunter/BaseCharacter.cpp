@@ -123,9 +123,10 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
     DamageToApply = FMath::Min(Health, DamageToApply);
     Health -= DamageToApply;
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("Health: %f"), Health); //TODO remove after debug
+    UE_LOG(LogTemp, Warning, TEXT("Health %f"), Health); //TODO remove after debug
+    // GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("Health: %f"), Health); //TODO remove after debug
 
-    if (Health == 0)
+    if (Health <= 0.0f)
     {
         IsDead = true;
     }
