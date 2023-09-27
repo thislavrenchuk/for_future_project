@@ -31,6 +31,8 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	void ShootAsPawn();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,15 +71,6 @@ protected:
 
 private:
 
-	/************************************************************************/
-	/* MOVEMENT                                                             */
-	/************************************************************************/
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	void Shoot(const FInputActionValue& Value);
-	void ZoomIn(const FInputActionValue& Value);
-	void ZoomOut(const FInputActionValue& Value);
-
 	UPROPERTY()
 	ABow* Crossbow;
 
@@ -89,6 +82,15 @@ private:
 
 	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
 	TSubclassOf<ABow> WeaponClass;
+
+	/************************************************************************/
+	/* MOVEMENT                                                             */
+	/************************************************************************/
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Shoot(const FInputActionValue& Value);
+	void ZoomIn(const FInputActionValue& Value);
+	void ZoomOut(const FInputActionValue& Value);
 
 	/************************************************************************/
 	/* DAMAGE                                                               */

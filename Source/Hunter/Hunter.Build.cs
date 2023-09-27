@@ -14,7 +14,8 @@ public class Hunter : ModuleRules
 			"Engine", 
 			"InputCore",
 			"Niagara",
-			"EnhancedInput" 
+			"EnhancedInput",
+			"GameplayTasks"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

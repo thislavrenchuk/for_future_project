@@ -124,7 +124,6 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     DamageToApply = FMath::Min(Health, DamageToApply);
     Health -= DamageToApply;
     UE_LOG(LogTemp, Warning, TEXT("Health %f"), Health); //TODO remove after debug
-    // GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Black, TEXT("Health: %f"), Health); //TODO remove after debug
 
     if (Health <= 0.0f)
     {
@@ -132,6 +131,15 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     }
     
     return DamageToApply;
+}
+
+void ABaseCharacter::ShootAsPawn()
+{
+    BeginPlay();
+    if (Controller != nullptr && Crossbow != nullptr)
+    {
+        Crossbow->Shoot();
+    }
 }
 
 void ABaseCharacter::Move(const FInputActionValue& Value)
