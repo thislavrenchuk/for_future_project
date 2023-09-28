@@ -20,18 +20,19 @@ void ABaseAIController::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     
-    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    // VERSION 2 - with dumb Behavior Tree
+    // APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    // if (LineOfSightTo(PlayerPawn))
+    // {
+    //     GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+    //     GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+    // } 
+    // else 
+    // {
+    //     GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+    // }
 
-    if (LineOfSightTo(PlayerPawn))
-    {
-        GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
-        GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
-    } 
-    else 
-    {
-        GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
-    }
-
+    // VERSION 1 - without BehaviorTree
     // bool InLineOfSight = LineOfSightTo(PlayerPawn);
     // if (InLineOfSight)
     // {

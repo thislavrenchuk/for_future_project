@@ -8,7 +8,7 @@
 
 UBTService_PlayerLocation::UBTService_PlayerLocation()
 {
-    NameNode = TEXT("Update Player Location"); // sets a human-readable name in the Unreal BT UI
+    NodeName = TEXT("Update Player Location"); // sets a human-readable name in the Unreal BT UI
 }
 
 void UBTService_PlayerLocation::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

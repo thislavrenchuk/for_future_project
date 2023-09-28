@@ -2,6 +2,7 @@
 
 
 #include "Projectile.h"
+#include "CollisionQueryParams.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -86,7 +87,10 @@ void AProjectile::CreateLineTrace(FVector Location, FRotator Rotation, FHitResul
 {
 	// Create a line trace 
 	FVector LineTraceEnd = Location + Rotation.Vector() * MaxRange;
-	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel1);
+	// Ignore certain actors
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel1, Params);
 	if (bSuccess) 
 	{
 		//TODO: apply Damage if actor hit
