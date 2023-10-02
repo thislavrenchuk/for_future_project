@@ -122,13 +122,20 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    // Is damage more than health remaining?
     DamageToApply = FMath::Min(Health, DamageToApply);
+    
     Health -= DamageToApply;
+    
     UE_LOG(LogTemp, Warning, TEXT("Health %f"), Health); //TODO remove after debug
 
+    // If Dead, apply approporiate changes
     if (Health <= 0.0f)
     {
         IsDead = true;
+        // TODO: play dead animation
+        // TODO: if main character, play "death screen"
+
         // Detach controller from character
         DetachFromControllerPendingDestroy();
         // Switch off capsule collision
@@ -136,15 +143,6 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     }
     
     return DamageToApply;
-}
-
-void ABaseCharacter::ShootAsPawn()
-{
-    BeginPlay();
-    if (Controller != nullptr && Crossbow != nullptr)
-    {
-        Crossbow->Shoot();
-    }
 }
 
 void ABaseCharacter::Move(const FInputActionValue& Value)
@@ -183,6 +181,15 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 
 void ABaseCharacter::Shoot(const FInputActionValue& Value)
 {
+    if (Controller != nullptr && Crossbow != nullptr)
+    {
+        Crossbow->Shoot();
+    }
+}
+
+void ABaseCharacter::ShootAsPawn()
+{
+    BeginPlay();
     if (Controller != nullptr && Crossbow != nullptr)
     {
         Crossbow->Shoot();
