@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
 #include "BaseEnemy.generated.h"
 
 UCLASS()

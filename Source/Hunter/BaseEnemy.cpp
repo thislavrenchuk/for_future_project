@@ -56,6 +56,8 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
         // Switch off capsule collision
         GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
+
+	return DamageToApply;
 }
 
 void ABaseEnemy::Attack()
@@ -74,8 +76,8 @@ void ABaseEnemy::Attack()
 		// Apply Damage
 		if (HitSuccessful && HitActor != nullptr)
 		{
-			FPointDamageEvent DamageEvent(AttackDamage, HitResult, -Rotation.Vector(), nullptr);
-			HitActor->TakeDamage(Damage, DamageEvent, this->GetInstigatorController(), this);
+			FPointDamageEvent DamageEvent(AttackDamage, HitResult, -EnemyRotation.Vector(), nullptr);
+			HitActor->TakeDamage(AttackDamage, DamageEvent, this->GetInstigatorController(), this);
 		}
 
 	}
