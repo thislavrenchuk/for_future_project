@@ -11,7 +11,7 @@
 #include "Curves/CurveFloat.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
-#include "Bow.h"
+#include "Hunter/Bow.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()

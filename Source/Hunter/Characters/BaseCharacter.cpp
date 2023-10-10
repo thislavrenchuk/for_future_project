@@ -5,7 +5,7 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
-#include "InputConfigData.h"
+#include "Hunter/InputConfigData.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values

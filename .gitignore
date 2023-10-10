@@ -1,3 +1,7 @@
+# Imported Packs
+Content/DeepElderCaves/*
+Content/ParagonSparrow/*
+
 # Visual Studio 2015 user specific files
 .vs/
 .vscode

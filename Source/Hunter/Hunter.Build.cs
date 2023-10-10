@@ -15,7 +15,8 @@ public class Hunter : ModuleRules
 			"InputCore",
 			"Niagara",
 			"EnhancedInput",
-			"GameplayTasks"
+			"GameplayTasks",
+			"NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
