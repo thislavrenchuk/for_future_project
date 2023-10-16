@@ -1,8 +1,4 @@
-# Imported Packs
-Content/DeepElderCaves
-Content/ParagonSparrow
-Content/ParagonFey
-Content/BlinkAndDashVFX
+
 
 # Visual Studio 2015 user specific files
 .vs/
@@ -104,3 +100,9 @@ DerivedDataCache/*
 # Allow any files from /RawContent dir.
 # Any file in /RawContent dir will be managed by git lfs.
 !/RawContent/**/*
+
+# Imported Packs
+Content/DeepElderCaves/
+Content/ParagonSparrow/
+Content/ParagonFey/
+Content/BlinkAndDashVFX/
