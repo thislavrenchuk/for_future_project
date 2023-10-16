@@ -8,8 +8,9 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Character.h"
-
 #include "Bubble.generated.h"
+
+class ABaseMultiplierEnemy;
 
 UCLASS()
 class HUNTER_API ABubble : public AActor
@@ -39,11 +40,13 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;
-	
-	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* StaticMeshFile;
 
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* ParticleSystemComponent;
+
+	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
+	TSubclassOf<ABaseMultiplierEnemy> MultiplierClass;
+
+	void Multiply();
 
 };

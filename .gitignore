@@ -1,6 +1,8 @@
 # Imported Packs
-Content/DeepElderCaves/*
-Content/ParagonSparrow/*
+Content/DeepElderCaves
+Content/ParagonSparrow
+Content/ParagonFey
+Content/BlinkAndDashVFX
 
 # Visual Studio 2015 user specific files
 .vs/

@@ -2,6 +2,7 @@
 
 
 #include "BaseMultiplierEnemy.h"
+#include "Engine/World.h"
 
 // Sets default values
 ABaseMultiplierEnemy::ABaseMultiplierEnemy()
@@ -13,34 +14,48 @@ ABaseMultiplierEnemy::ABaseMultiplierEnemy()
 void ABaseMultiplierEnemy::BeginPlay()
 {
     Super::BeginPlay();
+    
+    // Spawn bubbles
+	FActorSpawnParameters BubbleSpawnParameters;
+	BubbleSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	BubbleSpawnParameters.bNoFail = false;
+	BubbleSpawnParameters.Owner = this; 
+	BubbleSpawnParameters.Instigator = NULL;
 
-    // Spawn two Bubble Actors 
-    Bubble1 = GetWorld()->SpawnActor<ABubble>();
-    Bubble2 = GetWorld()->SpawnActor<ABubble>();
-    Bubble1->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bubble1Socket"));
-    Bubble2->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bubble2Socket"));
-    Bubble1->SetOwner(this);
-    Bubble2->SetOwner(this);
+    LeftBubble = GetWorld()->SpawnActor<ABubble>(BubbleClass, BubbleSpawnParameters);
+    LeftBubble->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftBubbleSocket"));
+    LeftBubble->SetOwner(this);
+
+    RightBubble = GetWorld()->SpawnActor<ABubble>(BubbleClass, BubbleSpawnParameters);
+    RightBubble->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightBubbleSocket"));
+    RightBubble->SetOwner(this);
 }
 
 void ABaseMultiplierEnemy::Multiply()
 {
-    // Spawn a new Multiplier somewhere nearby
-    FVector Origin = this->GetActorLocation();
-    FNavLocation SpawnLocation;
-    UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	if (!NavigationSystem)
-	{
-		return;
-	}
+    // // Spawn a new Multiplier somewhere nearby
+    // FNavLocation SpawnLocation;
+    // UWorld* World = GEngine->GetWorldContexts()[0].World();
+    // UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	// if (!NavigationSystem)
+	// {
+	// 	return;
+	// }
 
-    bool bSuccess = NavigationSystem->GetRandomReachablePointInRadius(Origin, NewEnemySpawnRadius, SpawnLocation);
+    // FVector OriginalEnemyLocation = GetActorLocation();
+    // UE_LOG(LogTemp, Warning, TEXT("OriginalEnemyLocation: %s"), *OriginalEnemyLocation.ToString());
+
     
-    if (bSuccess) 
-    {
-        FRotator SpawnRotation = this->GetActorRotation(); // Rotate towards the player
-        ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(SpawnLocation, SpawnRotation);
-        //TODO: might need to also get the AIController to possess the new enemy
-    }
+    // bool bSuccess = NavigationSystem->GetRandomReachablePointInRadius(OriginalEnemyLocation, NewEnemySpawnRadius, SpawnLocation);
+    
+    // if (bSuccess) 
+    // {
+    //     FRotator SpawnRotation = this->GetActorRotation(); // Rotate towards the player
+    //     FActorSpawnParameters EnemySpawnParameters;
+    //     EnemySpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    //     EnemySpawnParameters.bNoFail = false;
+    //     ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(SpawnLocation, SpawnRotation, EnemySpawnParameters);
+    //     //TODO: might need to also get the AIController to possess the new enemy
+    // }
 
 }

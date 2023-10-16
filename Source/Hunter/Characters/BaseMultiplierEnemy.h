@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "BaseEnemy.h"
 #include "Math/UnrealMathUtility.h"
-#include "NavigationSystem.h"
-#include "AI/Navigation/NavigationTypes.h"
 #include "Hunter/Bubble.h"
 #include "BaseMultiplierEnemy.generated.h"
 
@@ -33,9 +31,12 @@ protected:
 	
 private:
 	UPROPERTY()
-	ABubble* Bubble1;
+	ABubble* LeftBubble;
 
 	UPROPERTY()
-	ABubble* Bubble2;
+	ABubble* RightBubble;
+
+	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
+	TSubclassOf<ABubble> BubbleClass;
 
 };
