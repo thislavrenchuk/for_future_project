@@ -20,8 +20,6 @@ public:
 	// Sets default values for this character's properties
 	ABaseMultiplierEnemy();
 
-	void Multiply();
-
 	UPROPERTY(EditAnywhere)
 	float NewEnemySpawnRadius = 300;
 

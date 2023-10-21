@@ -49,4 +49,9 @@ private:
 
 	void Multiply();
 
+	bool CheckSpawnLocationLineTraceToPlayer(FVector SpawnLocation);
+
+	// bool CheckSpawnLocationIsVisibleInCamera(FVector SpawnLocation);
+
+	bool CheckSpawnInFrontOfPlayer(FVector SpawnLocation);
 };

@@ -10,7 +10,12 @@
 #include "Components/SceneComponent.h"
 #include "NavigationSystem.h"
 #include "AI/Navigation/NavigationTypes.h"
+#include "AI/Navigation/NavQueryFilter.h"
 #include "Hunter/Characters/BaseMultiplierEnemy.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/PrimitiveComponent.h"
+#include "Projectile.h"
+#include "Math/Vector.h"
 
 // Sets default values
 ABubble::ABubble()
@@ -39,7 +44,7 @@ ABubble::ABubble()
 	
 	if (GetOwner() == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("GetOwner is empty"));
+		UE_LOG(LogTemp, Warning, TEXT("GetOwner is empty")); //TODO fix this
 	} else 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GetOwner is populated"));
@@ -96,42 +101,135 @@ float ABubble::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 	return DamageToApply;
 }
 
+
+bool ABubble::CheckSpawnInFrontOfPlayer(FVector SpawnLocation)
+{
+	// First vector is the player forward vector
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	FVector FirstVector = PlayerPawn->GetActorForwardVector();
+	UE_LOG(LogTemp, Warning, TEXT("DEBUG: FirstVector: %s"), *FirstVector.ToString());
+	// Second vector is the direction vector from player to target enemy location
+	FVector SecondVector = SpawnLocation - PlayerPawn->GetActorLocation();
+	SecondVector.Normalize();
+	UE_LOG(LogTemp, Warning, TEXT("DEBUG: SecondVector: %s"), *SecondVector.ToString());
+	// Workout the dot product
+	double DotProduct = FVector::DotProduct(FirstVector, SecondVector);
+	UE_LOG(LogTemp, Warning, TEXT("DEBUG: DotProduct: %d"), DotProduct);
+	
+	// DotProduct >= 0 if the enemy is in front of player
+	// and DotProduct < 0 if the enemy is behind the player
+	return DotProduct >= 0;
+}
+
+
 void ABubble::Multiply()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Trying to Multiply()")); //TODO remove
 	// Spawn a new Multiplier somewhere nearby
     FNavLocation SpawnLocation;
-    UWorld* World = GEngine->GetWorldContexts()[0].World();
-	if (GetWorld() == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GetWorld() returns nullptr")); //TODO remove
-	}
     UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	FVector OriginalEnemyLocation = GetActorLocation();
-    UE_LOG(LogTemp, Warning, TEXT("OriginalEnemyLocation: %s"), *OriginalEnemyLocation.ToString());
-
 	if (!NavigationSystem)
 	{
 		return;
 	}
+
+	bool bFoundGoodSpot = false;
+	bool bSuccessfullyGenerated = false;
+	bool bSpawnLocationInFrontOfPlayer = false;
+	// bool bRenderedInCamera = false;
 	
-    
-    bool bSuccess = NavigationSystem->GetRandomReachablePointInRadius(OriginalEnemyLocation, 400.0f, SpawnLocation);
-    if (!bSuccess)
+	do
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bSuccess was false"));//TODO remove
-	}
-	UE_LOG(LogTemp, Warning, TEXT("SpawnLocation: %s"), *SpawnLocation.Location.ToString()); //TODO remove
+		UE_LOG(LogTemp, Warning, TEXT("DEBUG: Looking for good SpawnLocation..."));
+		bSuccessfullyGenerated = NavigationSystem->GetRandomReachablePointInRadius(OriginalEnemyLocation, 400.0f, SpawnLocation);
+		UE_LOG(LogTemp, Warning, TEXT("DEBUG: bSuccessfullyGenerated: %s"), (bSuccessfullyGenerated ? TEXT("true") : TEXT("false")));
+		// Check that it's visible to player
+		bFoundGoodSpot = CheckSpawnLocationLineTraceToPlayer(SpawnLocation.Location);
+		UE_LOG(LogTemp, Warning, TEXT("DEBUG: bFoundGoodSpot: %s"), (bFoundGoodSpot ? TEXT("true") : TEXT("false")));
+		// Chack that it's in front of the player
+		bSpawnLocationInFrontOfPlayer = CheckSpawnInFrontOfPlayer(SpawnLocation.Location);
+		UE_LOG(LogTemp, Warning, TEXT("DEBUG: bSpawnLocationInFrontOfPlayer: %s"), (bSpawnLocationInFrontOfPlayer ? TEXT("true") : TEXT("false")));
+		// TODO check that it's not overlapping with original multiplier 
+	} while (!bFoundGoodSpot || !bSuccessfullyGenerated || !bSpawnLocationInFrontOfPlayer);
 
-    if (bSuccess) 
-    {
-        // FRotator SpawnRotation = this->GetOwner()->GetActorRotation(); // Rotate towards the player
-		FRotator SpawnRotation = GetOwner()->GetActorRotation();
-        FActorSpawnParameters EnemySpawnParameters;
-        EnemySpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-        EnemySpawnParameters.bNoFail = true;
-
-        ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(MultiplierClass, SpawnLocation.Location, SpawnRotation, EnemySpawnParameters);
-        //TODO: might need to also get the AIController to possess the new enemy
-    }
+	// If successful, spawn new enemy
+	UE_LOG(LogTemp, Warning, TEXT("DEBUG: Spawning new Enemy..."));
+	FActorSpawnParameters EnemySpawnParameters;
+	EnemySpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	EnemySpawnParameters.bNoFail = true;
+	ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(MultiplierClass, SpawnLocation, GetOwner()->GetActorRotation(), EnemySpawnParameters);
+	//TODO: might need to also get the AIController to possess the new enemy
+    
 }
+
+bool ABubble::CheckSpawnLocationLineTraceToPlayer(FVector SpawnLocation)
+{
+	FVector PlayerLocation;
+	FRotator PlayerRotation;
+	FHitResult HitResult;
+	// Get Player Pawn
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	PlayerPawn->GetController()->GetPlayerViewPoint(PlayerLocation, PlayerRotation);
+	
+	// Set custom params
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner()); 
+	// Create line trace
+	GetWorld()->LineTraceSingleByChannel(HitResult, PlayerLocation, SpawnLocation, ECollisionChannel::ECC_GameTraceChannel1, Params);
+	// Check if hit actor is the enemy
+	TArray<FHitResult> InHits;
+	
+	bool LocationIsVisibleToPlayer = false;
+	if (HitResult.GetNumBlockingHits(InHits) == 0)
+	{
+		LocationIsVisibleToPlayer = true;
+	}
+	return LocationIsVisibleToPlayer;
+}
+
+// bool ABubble::CheckSpawnLocationIsVisibleInCamera(FVector SpawnLocation)
+// {
+// 	//Spawn invisible actor in SpawnLocation
+// 	FActorSpawnParameters EnemySpawnParameters;
+// 	EnemySpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+// 	EnemySpawnParameters.bNoFail = true;
+
+// 	// AProjectile* InvisibleActor = (AProjectile*) GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), SpawnLocation, EnemySpawnParameters);
+// 	// UStaticMeshComponent* InvisibleActorStaticMesh = Cast<UStaticMeshComponent>(InvisibleActor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	
+// 	// Spawn Actor
+// 	ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(MultiplierClass, SpawnLocation, GetOwner()->GetActorRotation(), EnemySpawnParameters);
+// 	// Get Skeletal Mesh
+// 	USkeletalMeshComponent* TwinsSkeletalMeshComponent = MyTwin->GetMesh();
+// 	if (TwinsSkeletalMeshComponent != nullptr)
+// 	{
+// 		TwinsSkeletalMeshComponent->SetVisibility(false);
+// 		UE_LOG(LogTemp, Warning, TEXT("DEBUG: SetVisibility to false before check"));
+// 	} 
+// 	// Get Primitive Component
+// 	UPrimitiveComponent* TwinsPrimitiveComponent = Cast<UPrimitiveComponent>(MyTwin->GetComponentByClass(UPrimitiveComponent::StaticClass()));
+	
+// 	float lastRendered = 0.0f;
+// 	if (TwinsPrimitiveComponent != nullptr)
+// 	{
+// 		lastRendered = TwinsPrimitiveComponent->GetLastRenderTimeOnScreen();
+// 	} 
+
+// 	// Check if it was rendered in the last 1 second & is therefore on Screen
+// 	float lastAcceptableOnScreenTime = 1.0f;
+// 	bool bSuccessfulSpawn = (lastRendered != 0.0f && lastRendered <= lastAcceptableOnScreenTime); // TODO this is always true because lastRendered is -1000.00000
+// 	if (bSuccessfulSpawn && TwinsSkeletalMeshComponent != nullptr)
+// 	{
+// 		// TwinsSkeletalMeshComponent->SetVisibility(true);
+// 		UE_LOG(LogTemp, Warning, TEXT("DEBUG: SetVisibility is true"));
+// 	} else
+// 	{
+// 		// Destroy the newly spawned Actor
+// 		MyTwin->DetachFromControllerPendingDestroy(); // Not required as not ACharacter but AActor
+// 		// 2.2 Switch off capsule collision
+// 		// TwinsSkeletalMeshComponent->SetCollisionProfileName(TEXT("OverlapAll"));
+// 		MyTwin->SetActorEnableCollision(false);
+// 	}
+
+// 	return bSuccessfulSpawn;
+// }

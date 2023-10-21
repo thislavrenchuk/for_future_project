@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Engine/DamageEvents.h"
 #include "BaseEnemy.generated.h"
 
@@ -31,6 +32,10 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* SkeletalMeshComponent;
+
 	/************************************************************************/
 	/* HEALTH                                                               */
 	/************************************************************************/

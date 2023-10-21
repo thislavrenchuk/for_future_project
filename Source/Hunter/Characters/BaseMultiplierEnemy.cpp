@@ -30,32 +30,3 @@ void ABaseMultiplierEnemy::BeginPlay()
     RightBubble->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightBubbleSocket"));
     RightBubble->SetOwner(this);
 }
-
-void ABaseMultiplierEnemy::Multiply()
-{
-    // // Spawn a new Multiplier somewhere nearby
-    // FNavLocation SpawnLocation;
-    // UWorld* World = GEngine->GetWorldContexts()[0].World();
-    // UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
-	// if (!NavigationSystem)
-	// {
-	// 	return;
-	// }
-
-    // FVector OriginalEnemyLocation = GetActorLocation();
-    // UE_LOG(LogTemp, Warning, TEXT("OriginalEnemyLocation: %s"), *OriginalEnemyLocation.ToString());
-
-    
-    // bool bSuccess = NavigationSystem->GetRandomReachablePointInRadius(OriginalEnemyLocation, NewEnemySpawnRadius, SpawnLocation);
-    
-    // if (bSuccess) 
-    // {
-    //     FRotator SpawnRotation = this->GetActorRotation(); // Rotate towards the player
-    //     FActorSpawnParameters EnemySpawnParameters;
-    //     EnemySpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    //     EnemySpawnParameters.bNoFail = false;
-    //     ABaseMultiplierEnemy* MyTwin = GetWorld()->SpawnActor<ABaseMultiplierEnemy>(SpawnLocation, SpawnRotation, EnemySpawnParameters);
-    //     //TODO: might need to also get the AIController to possess the new enemy
-    // }
-
-}

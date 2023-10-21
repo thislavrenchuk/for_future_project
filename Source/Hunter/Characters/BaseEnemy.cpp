@@ -9,6 +9,14 @@ ABaseEnemy::ABaseEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Create a Static Mesh Component & setup attachement to the RootComponent
+	if (!SkeletalMeshComponent)
+	{
+		SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+		SkeletalMeshComponent->SetupAttachment(GetRootComponent());
+	}
+
+
 }
 
 // Called when the game starts or when spawned
