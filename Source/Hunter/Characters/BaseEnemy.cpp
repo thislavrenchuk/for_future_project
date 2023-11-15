@@ -68,6 +68,11 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return DamageToApply;
 }
 
+float ABaseEnemy::GetHealth()
+{
+	return Health;
+}
+
 void ABaseEnemy::Attack()
 {
 	// TODO: opportunity for some smarter AI

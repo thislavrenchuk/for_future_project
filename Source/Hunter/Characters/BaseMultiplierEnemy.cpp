@@ -19,8 +19,6 @@ void ABaseMultiplierEnemy::BeginPlay()
 	FActorSpawnParameters BubbleSpawnParameters;
 	BubbleSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	BubbleSpawnParameters.bNoFail = false;
-	BubbleSpawnParameters.Owner = this; 
-	BubbleSpawnParameters.Instigator = NULL;
 
     LeftBubble = GetWorld()->SpawnActor<ABubble>(BubbleClass, BubbleSpawnParameters);
     LeftBubble->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("LeftBubbleSocket"));

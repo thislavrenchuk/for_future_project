@@ -41,17 +41,22 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* StaticMeshComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* ParticleSystemComponent;
-
 	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
 	TSubclassOf<ABaseMultiplierEnemy> MultiplierClass;
+
+	/************************************************************************/
+	/* PARTICLE EFFECT                                                      */
+	/************************************************************************/
+	UPROPERTY(EditAnywhere, Category="Particle Effect")
+	UParticleSystem* ParticleEffect;
+	UPROPERTY(EditAnywhere, Category="Particle Effect")
+	float ParticleDeltaTime = 1.0;
+	UPROPERTY(EditAnywhere, Category="Particle Effect")
+	float ParticleInterpSpeed = 1.0;
 
 	void Multiply();
 
 	bool CheckSpawnLocationLineTraceToPlayer(FVector SpawnLocation);
-
-	// bool CheckSpawnLocationIsVisibleInCamera(FVector SpawnLocation);
 
 	bool CheckSpawnInFrontOfPlayer(FVector SpawnLocation);
 };

@@ -2,6 +2,7 @@
 
 
 #include "Bow.h"
+#include "Hunter/Characters/BaseCharacter.h"
 
 // Sets default values
 ABow::ABow()
@@ -12,20 +13,20 @@ ABow::ABow()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	// Create a Skeletal mesh Component & setup attachement to the Root
-	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	SkeletalMeshComponent->SetupAttachment(Root);
+
+	// SkeletalMeshComponent = GetOwner()->GetMesh();
 	
 }
 
 void ABow::Shoot()
 {
 	// Particle effect
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(), 
-		ShootEffect, 
-		SkeletalMeshComponent->GetSocketLocation("ProjectileSocket"),
-		SkeletalMeshComponent->GetSocketRotation("ProjectileSocket")
-	);
+	// UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+	// 	GetWorld(), 
+	// 	ShootEffect, 
+	// 	SkeletalMeshComponent->GetSocketLocation("BowEmitterSocket"),
+	// 	SkeletalMeshComponent->GetSocketRotation("BowEmitterSocket")
+	// );
 	
 	// Spawn projectile
 	FActorSpawnParameters ActorSpawnParameters;
@@ -33,10 +34,16 @@ void ABow::Shoot()
 	ActorSpawnParameters.bNoFail = false;
 	ActorSpawnParameters.Owner = this->GetOwner(); // Set owner of projectile to Character
 	ActorSpawnParameters.Instigator = NULL;
+	ABaseCharacter* MyOwner = Cast<ABaseCharacter>(this->GetOwner());
+
+	if (MyOwner->GetMesh() == nullptr)
+	{
+		return;
+	}
 
     Projectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileClass, 
-		SkeletalMeshComponent->GetSocketTransform("ProjectileSocket"),
+		MyOwner->GetMesh()->GetSocketTransform("BowEmitterSocket"),
 		ActorSpawnParameters
 	);
 
