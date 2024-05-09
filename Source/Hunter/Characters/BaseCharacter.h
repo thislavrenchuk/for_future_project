@@ -14,6 +14,9 @@
 #include "Hunter/Bow.h"
 #include "BaseCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeathEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReceiveDamageEvent);
+
 UCLASS()
 class HUNTER_API ABaseCharacter : public ACharacter
 {
@@ -33,6 +36,11 @@ public:
 
 	void ShootAsPawn();
 
+	UPROPERTY(BlueprintAssignable)
+	FDeathEvent OnDeathEvent;
+	UPROPERTY(BlueprintAssignable)
+	FReceiveDamageEvent OnReceiveDamageEvent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +50,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
 	class UInputConfigData* InputConfigData;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool IsShooting = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool IsAiming = false;
+	UPROPERTY(BlueprintReadWrite)
+	bool IsStabbing = false;
+	UPROPERTY()
+	bool isZoomingIn = false;
+	UPROPERTY()
+	bool isZoomingOut = false;
 
 	/************************************************************************/
 	/* TIMELINE                                                             */
@@ -58,16 +77,14 @@ protected:
     UCurveFloat* FOVFloatCurve;
 	UPROPERTY()
     TEnumAsByte<ETimelineDirection::Type> TimelineDirection; 
-	UPROPERTY()
-	bool isZoomingIn = false;
-	UPROPERTY()
-	bool isZoomingOut = false;
-
 	UFUNCTION()
     void TimelineCallback(float val);
 	UFUNCTION()
     void TimelineFinishedCallback();
     void PlayTimeline();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float Health;
 
 private:
 
@@ -84,24 +101,25 @@ private:
 	TSubclassOf<ABow> WeaponClass;
 
 	/************************************************************************/
-	/* MOVEMENT                                                             */
+	/* ACTION                                                               */
 	/************************************************************************/
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Shoot(const FInputActionValue& Value);
+	void Stab(const FInputActionValue& Value);
 	void ZoomIn(const FInputActionValue& Value);
 	void ZoomOut(const FInputActionValue& Value);
 
 	/************************************************************************/
-	/* DAMAGE                                                               */
+	/* HEALTH STATE                                                         */
 	/************************************************************************/
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
 	UPROPERTY(VisibleAnywhere)
-	float Health;
-
-	UPROPERTY(VisibleAnywhere)
 	bool IsDead = false;
+
+	UPROPERTY(EditAnywhere)
+	float StabDamage = 50;
 
 };

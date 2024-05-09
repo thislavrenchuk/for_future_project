@@ -29,5 +29,8 @@ public:
 	UInputAction* InputShoot;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* InputStab;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputAction* InputZoom;
 };

@@ -10,13 +10,10 @@ ABaseEnemy::ABaseEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create a Static Mesh Component & setup attachement to the RootComponent
-	if (!SkeletalMeshComponent)
+	if (!SkeletalMeshComponent && GetMesh() != nullptr)
 	{
-		SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-		SkeletalMeshComponent->SetupAttachment(GetRootComponent());
+		SkeletalMeshComponent = GetMesh();
 	}
-
-
 }
 
 // Called when the game starts or when spawned
@@ -26,7 +23,6 @@ void ABaseEnemy::BeginPlay()
 
 	// Set Health at full
     Health = MaxHealth;
-	
 }
 
 // Called every frame
@@ -47,52 +43,41 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 {
 	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
     // Is damage more than health remaining?
-    DamageToApply = FMath::Min(Health, DamageToApply);
+    float DamageToApplyCalc = FMath::Min(Health, DamageToApply);
     
-    Health -= DamageToApply;
-    
-    UE_LOG(LogTemp, Warning, TEXT("Enemy Health: %f"), Health); //TODO remove after debug
+    Health -= DamageToApplyCalc;
 
     // If Dead, apply approporiate changes
     if (Health <= 0.0f)
     {
         IsDead = true;
-        // TODO: play dead animation
-
-        // Detach controller from character
-        DetachFromControllerPendingDestroy();
-        // Switch off capsule collision
-        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     }
+	else 
+	{
+		IsHit = true;
+	}
 
 	return DamageToApply;
 }
 
-float ABaseEnemy::GetHealth()
-{
-	return Health;
-}
-
 void ABaseEnemy::Attack()
 {
-	// TODO: opportunity for some smarter AI
-	// - for example, if low on health, will retreat temporarily
 	if (!IsDead) 
 	{
+		OnAttackEvent.Broadcast();
 		FHitResult HitResult;
-		FVector EnemyLocation = this->GetActorLocation();
-		FRotator EnemyRotation = this->GetActorRotation();
+		FVector MyLocation = GetActorLocation();
+		FRotator MyRotation = GetActorRotation();
+
 		// Generate Line Trace
-		bool HitSuccessful = CreateLineTrace(EnemyLocation, EnemyRotation, HitResult);
-		
-		AActor* HitActor = HitResult.GetActor();
+		bool HitSuccessful = CreateLineTrace(MyLocation, MyRotation, HitResult);		
 		// Apply Damage
+		AActor* HitActor = HitResult.GetActor();
 		if (HitSuccessful && HitActor != nullptr)
 		{
-			FPointDamageEvent DamageEvent(AttackDamage, HitResult, -EnemyRotation.Vector(), nullptr);
+			FPointDamageEvent DamageEvent(AttackDamage, HitResult, -MyRotation.Vector(), nullptr);
 			HitActor->TakeDamage(AttackDamage, DamageEvent, this->GetInstigatorController(), this);
 		}
-
 	}
 }
 
@@ -102,9 +87,16 @@ bool ABaseEnemy::CreateLineTrace(FVector Location, FRotator Rotation, FHitResult
 	FVector LineTraceEnd = Location + Rotation.Vector() * MaxAttackRange;
 	// Ignore yourself
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
-
+	Params.AddIgnoredActor(this);
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel1, Params);
 	return bSuccess;
 }
 
+float ABaseEnemy::GetHealth()
+{
+	return Health;
+}
+
+float ABaseEnemy::GetAttackDamage() const {
+	return AttackDamage;
+}

@@ -111,7 +111,7 @@ bool ABubble::CheckSpawnInFrontOfPlayer(FVector SpawnLocation)
 
 void ABubble::Multiply()
 {
-		// Spawn a new Multiplier somewhere nearby
+	// Spawn a new Multiplier somewhere nearby
     FNavLocation SpawnLocation;
 	UNavigationSystemV1* NavigationSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	FVector OriginalEnemyLocation = GetActorLocation();
@@ -151,7 +151,7 @@ void ABubble::Multiply()
 	if (ParticleEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(ParticleEffect, Sphere->GetRootComponent(), NAME_None, Sphere->GetActorLocation(), Sphere->GetActorRotation(), EAttachLocation::SnapToTarget, false, EPSCPoolMethod::AutoRelease);
-		FMath::VInterpTo(Sphere->GetActorLocation(), SpawnLocation.Location, ParticleDeltaTime, ParticleInterpSpeed);
+		FVector NewVector = FMath::VInterpTo(Sphere->GetActorLocation(), SpawnLocation.Location, ParticleDeltaTime, ParticleInterpSpeed);
 		Sphere->Destroy();
 	}
 

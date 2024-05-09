@@ -3,7 +3,7 @@
 
 #include "BTask_Shoot.h"
 #include "AIController.h"
-#include "Hunter/Characters/BaseCharacter.h"
+#include "Hunter/Characters/BaseEnemy.h"
 
 UBTask_Shoot::UBTask_Shoot()
 {
@@ -14,17 +14,17 @@ EBTNodeResult::Type UBTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
-    AAIController* AIOwner = OwnerComp.GetAIOwner(); // Get AIOwner
+    AAIController* AIOwner = OwnerComp.GetAIOwner(); 
     if (AIOwner == nullptr)
     {
         return EBTNodeResult::Failed;
     }
-    ABaseCharacter* OwnerAsBaseCharacter = Cast<ABaseCharacter>(AIOwner->GetPawn()); // Cast the Pawn to BaseCharacter
-    if (OwnerAsBaseCharacter == nullptr)
+    ABaseEnemy* OwnerAsBaseEnemy = Cast<ABaseEnemy>(AIOwner->GetPawn()); 
+    if (OwnerAsBaseEnemy == nullptr)
     {
         return EBTNodeResult::Failed;
     }
-    OwnerAsBaseCharacter->ShootAsPawn(); // Shoot
+    OwnerAsBaseEnemy->Attack(); 
 
     return EBTNodeResult::Succeeded;
 }

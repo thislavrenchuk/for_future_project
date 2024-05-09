@@ -52,7 +52,7 @@ private:
 	UMaterialInstanceDynamic* ProjectileMaterialInstance;
 
 	UPROPERTY(EditAnywhere)
-	float Damage = 10;
+	float Damage = 50;
 
 	void GetProjectileTransform(FVector &Location, FRotator &Rotation);
 

@@ -70,7 +70,6 @@ void AProjectile::SetUp()
 	Fly(Direction);
 }
 
-
 void AProjectile::GetProjectileTransform(FVector &Location, FRotator &Rotation)
 {
 	// Get owner controller
@@ -93,7 +92,6 @@ void AProjectile::CreateLineTrace(FVector Location, FRotator Rotation, FHitResul
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, Location, LineTraceEnd, ECollisionChannel::ECC_GameTraceChannel1, Params);
 	if (bSuccess) 
 	{
-		//TODO: apply Damage if actor hit
 		AActor* HitActor = HitResult.GetActor();
 
 		if (HitActor != nullptr) 

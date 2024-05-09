@@ -7,7 +7,11 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Blueprint/UserWidget.h"
 #include "BaseEnemy.generated.h"
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackEvent);
 
 UCLASS()
 class HUNTER_API ABaseEnemy : public ACharacter
@@ -17,6 +21,9 @@ class HUNTER_API ABaseEnemy : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ABaseEnemy();
+
+	UPROPERTY(BlueprintAssignable)
+	FAttackEvent OnAttackEvent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,31 +38,35 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	float GetHealth();
+	UFUNCTION(BlueprintCallable)
+	virtual float GetHealth();
+	virtual void Attack();
+	virtual float GetAttackDamage() const;
 
 private:
 
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* SkeletalMeshComponent;
 
-	/************************************************************************/
-	/* HEALTH                                                               */
-	/************************************************************************/
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	float Health;
-	UPROPERTY(VisibleAnywhere)
-	bool IsDead = false;
 
 	/************************************************************************/
 	/* ATTACK                                                               */
 	/************************************************************************/
 	UPROPERTY(EditAnywhere)
 	float AttackDamage = 10;
-	virtual void Attack();
 	bool CreateLineTrace(FVector Location, FRotator Rotation, FHitResult &HitResult);
+
 protected:
 	UPROPERTY(EditAnywhere)
-	float MaxAttackRange = 100; // 1 metres
+	float MaxAttackRange = 10000; // 100 metres
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsDead = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool IsHit = false;
 };

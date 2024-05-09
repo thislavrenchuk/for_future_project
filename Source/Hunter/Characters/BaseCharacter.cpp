@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
 #include "Hunter/InputConfigData.h"
+#include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -80,6 +81,7 @@ void ABaseCharacter::BeginPlay()
     // Get Camera Component
     CameraComponent = Cast<UCameraComponent>(this->GetComponentByClass(UCameraComponent::StaticClass()));
 
+    // TODO change so this is something the main character can pick up
     // Spawn a child Bow Actor with the Character Actor
     Crossbow = GetWorld()->SpawnActor<ABow>(WeaponClass);
 	Crossbow->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("CrossbowSocket"));
@@ -117,6 +119,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
     EnhancedInputComponent->BindAction(InputConfigData->InputZoom, ETriggerEvent::Started, this, &ABaseCharacter::ZoomIn);
     EnhancedInputComponent->BindAction(InputConfigData->InputZoom, ETriggerEvent::Completed, this, &ABaseCharacter::ZoomOut);
     EnhancedInputComponent->BindAction(InputConfigData->InputShoot, ETriggerEvent::Completed, this, &ABaseCharacter::Shoot);
+    EnhancedInputComponent->BindAction(InputConfigData->InputStab, ETriggerEvent::Completed, this, &ABaseCharacter::Stab);
 }
 
 float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -127,19 +130,23 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     
     Health -= DamageToApply;
     
-    UE_LOG(LogTemp, Warning, TEXT("Health %f"), Health); //TODO remove after debug
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("MC Health is now: %f"), Health)); // TODO remove after debugging
 
     // If Dead, apply approporiate changes
     if (Health <= 0.0f)
     {
         IsDead = true;
-        // TODO: play dead animation
-        // TODO: if main character, play "death screen"
-
+        // TODO: play dead animation & death screen
+        OnDeathEvent.Broadcast();
         // Detach controller from character
         DetachFromControllerPendingDestroy();
         // Switch off capsule collision
         GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
+    else 
+    {
+        // TODO play damage animation & reduce health bar
+        OnReceiveDamageEvent.Broadcast();
     }
     
     return DamageToApply;
@@ -181,12 +188,18 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 
 void ABaseCharacter::Shoot(const FInputActionValue& Value)
 {
-    if (Controller != nullptr && Crossbow != nullptr)
+    if (Controller != nullptr && Crossbow != nullptr && !IsShooting)
     {
+        // Play animation
+        IsShooting = true;
+
+        // Shoot arrow
         Crossbow->Shoot();
     }
 }
 
+// Was used by shooting enemies (not by multiplier)
+// TODO move out to Base Enemy?
 void ABaseCharacter::ShootAsPawn()
 {
     BeginPlay();
@@ -196,11 +209,20 @@ void ABaseCharacter::ShootAsPawn()
     }
 }
 
+void ABaseCharacter::Stab(const FInputActionValue& Value)
+{
+    if (Controller != nullptr)
+    {
+        // play animation in Blueprints
+        IsStabbing = true; 
+    }
+}
+
 void ABaseCharacter::ZoomIn(const FInputActionValue& Value)
 {
     if (Controller != nullptr && Crossbow != nullptr && SpringArmComponent != nullptr)
     {
-        UE_LOG(LogTemp, Warning, TEXT("ZoomIn function kicked off"));
+        IsAiming = true;
         PlayTimeline();
     }
 }
@@ -209,6 +231,7 @@ void ABaseCharacter::ZoomOut(const FInputActionValue& Value)
 {
     if (Controller != nullptr && Crossbow != nullptr && SpringArmComponent != nullptr)
     {
+        IsAiming = false;
         MyTimeline->Reverse();
         isZoomingIn = false;
         isZoomingOut = true;
@@ -218,7 +241,6 @@ void ABaseCharacter::ZoomOut(const FInputActionValue& Value)
 void ABaseCharacter::TimelineCallback(float interpolatedVal)
 {
     // This function is called for every tick in the timeline.
-    // UE_LOG(LogTemp, Warning, TEXT("I'm in TimelineCallback, with interpolatedValX: %f, and interpolatedValY: %f"), interpolatedValX, interpolatedValY); //TODO remove
     float position = MyTimeline->GetPlaybackPosition();
     if (SpringArmComponent != nullptr)
     {

@@ -9,7 +9,7 @@
 #include "BaseMultiplierEnemy.generated.h"
 
 /**
- * 
+ * A multiplier enemy spawns more enemies if one of the "Bubbles" or "Gas Chambers is hit"
  */
 UCLASS()
 class HUNTER_API ABaseMultiplierEnemy : public ABaseEnemy

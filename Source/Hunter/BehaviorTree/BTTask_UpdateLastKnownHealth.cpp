@@ -2,7 +2,6 @@
 
 
 #include "BTTask_UpdateLastKnownHealth.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Pawn.h"
 #include "Hunter/Characters/BaseEnemy.h"
@@ -22,6 +21,7 @@ EBTNodeResult::Type UBTTask_UpdateLastKnownHealth::ExecuteTask(UBehaviorTreeComp
         if (AIController->GetPawn()) {
             ABaseEnemy* Enemy = Cast<ABaseEnemy>(AIController->GetPawn());  
             OwnerComp.GetBlackboardComponent()->SetValueAsFloat(GetSelectedBlackboardKey(), Enemy->GetHealth());
+            UE_LOG(LogTemp, Warning, TEXT("UBTTask_UpdateLastKnownHealth: apparently succeeded..."));
             return EBTNodeResult::Succeeded;
         }
         else
