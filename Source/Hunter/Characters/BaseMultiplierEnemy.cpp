@@ -28,3 +28,13 @@ void ABaseMultiplierEnemy::BeginPlay()
     RightBubble->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("RightBubbleSocket"));
     RightBubble->SetOwner(this);
 }
+
+float ABaseMultiplierEnemy::GetAttackDamage() const 
+{
+    return MultiplierAttackDamage;
+}
+
+float ABaseMultiplierEnemy::GetMaxHealth() const
+{
+    return MultiplierMaxHealth;
+}

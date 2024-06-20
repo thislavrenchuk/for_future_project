@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* BoxCollisionComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* StaticMeshComponent;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,9 +40,6 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
-	
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
 	TSubclassOf<ABaseMultiplierEnemy> MultiplierClass;

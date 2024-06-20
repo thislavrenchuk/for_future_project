@@ -51,10 +51,12 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
     if (Health <= 0.0f)
     {
         IsDead = true;
+		OnDeathEvent.Broadcast();
     }
 	else 
 	{
 		IsHit = true;
+		OnReceiveDamageEvent.Broadcast();
 	}
 
 	return DamageToApply;
@@ -97,6 +99,12 @@ float ABaseEnemy::GetHealth()
 	return Health;
 }
 
-float ABaseEnemy::GetAttackDamage() const {
+float ABaseEnemy::GetAttackDamage() const 
+{
 	return AttackDamage;
+}
+
+float ABaseEnemy::GetMaxHealth() const
+{
+	return MaxHealth;
 }

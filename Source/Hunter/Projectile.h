@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* BoxCollisionComponent;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UStaticMeshComponent* StaticMeshComponent;
+
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 5000; // 50 metres
 
@@ -43,9 +46,6 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* StaticMeshComponent;
 
 	// Projectile material
 	UPROPERTY(VisibleDefaultsOnly)

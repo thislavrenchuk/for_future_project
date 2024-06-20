@@ -73,6 +73,15 @@ void ABaseCharacter::BeginPlay()
         MyTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
 
         MyTimeline->RegisterComponent();
+
+        // Spawn Baby Container
+        FActorSpawnParameters BabyContainerSpawnParameters;
+        BabyContainerSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        BabyContainerSpawnParameters.bNoFail = false;
+
+        BabyContainer = GetWorld()->SpawnActor<ABabyContainer>(BabyContainerClass, BabyContainerSpawnParameters);
+        BabyContainer->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("BabyContainer"));
+        BabyContainer->SetOwner(this);
     }
 
     // Get Spring Arm Component
@@ -136,7 +145,7 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
     if (Health <= 0.0f)
     {
         IsDead = true;
-        // TODO: play dead animation & death screen
+        // Play dead animation & death screen
         OnDeathEvent.Broadcast();
         // Detach controller from character
         DetachFromControllerPendingDestroy();
@@ -190,31 +199,27 @@ void ABaseCharacter::Shoot(const FInputActionValue& Value)
 {
     if (Controller != nullptr && Crossbow != nullptr && !IsShooting)
     {
-        // Play animation
-        IsShooting = true;
-
+        OnShootingEvent.Broadcast();
         // Shoot arrow
         Crossbow->Shoot();
     }
 }
 
-// Was used by shooting enemies (not by multiplier)
-// TODO move out to Base Enemy?
-void ABaseCharacter::ShootAsPawn()
-{
-    BeginPlay();
-    if (Controller != nullptr && Crossbow != nullptr)
-    {
-        Crossbow->Shoot();
-    }
-}
+// TODO: tidy up
+// void ABaseCharacter::ShootAsPawn()
+// {
+//     BeginPlay();
+//     if (Controller != nullptr && Crossbow != nullptr)
+//     {
+//         Crossbow->Shoot();
+//     }
+// }
 
 void ABaseCharacter::Stab(const FInputActionValue& Value)
 {
     if (Controller != nullptr)
     {
-        // play animation in Blueprints
-        IsStabbing = true; 
+        OnStabbingEvent.Broadcast();
     }
 }
 

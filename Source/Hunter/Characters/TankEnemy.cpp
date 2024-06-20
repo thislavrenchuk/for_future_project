@@ -1,22 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ShooterEnemy.h"
+#include "TankEnemy.h"
 #include "Engine/World.h"
 
 // Sets default values
-AShooterEnemy::AShooterEnemy()
+ATankEnemy::ATankEnemy()
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AShooterEnemy::BeginPlay()
+void ATankEnemy::BeginPlay()
 {
     Super::BeginPlay();
 }
 
-float AShooterEnemy::GetAttackDamage() const 
+float ATankEnemy::GetAttackDamage() const 
 {
-    return ShooterAttackDamage;
+    return TankAttackDamage;
+}
+
+float ATankEnemy::GetMaxHealth() const
+{
+    return TankMaxHealth;
 }

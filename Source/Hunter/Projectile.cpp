@@ -14,6 +14,13 @@ AProjectile::AProjectile()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->SetRootComponent(Root);
 
+	// Create a Static Mesh Component & setup attachement to the RootComponent
+	if (!StaticMeshComponent)
+	{
+		StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+		StaticMeshComponent->SetupAttachment(Root);
+	}
+
 	// Add Box-collision
 	if (!BoxCollisionComponent)
 	{
@@ -22,7 +29,7 @@ AProjectile::AProjectile()
 		BoxCollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
 		// Event called when component hits something.
 		// BoxCollisionComponent->OnComponentHit.AddDynamic(this, &AFPSProjectile::OnHit);
-		BoxCollisionComponent->SetupAttachment(Root);
+		BoxCollisionComponent->SetupAttachment(StaticMeshComponent);
 	}
 
 	// Create a Projectile Movement Component (do SetUpdatedComponent(), otherwise default is Root)
@@ -34,13 +41,6 @@ AProjectile::AProjectile()
 		ProjectileMovementComponent->MaxSpeed = 500.0f;
 		ProjectileMovementComponent->bRotationFollowsVelocity = false;
 		ProjectileMovementComponent->ProjectileGravityScale = 1.0f;
-	}
-
-	// Create a Static Mesh Component & setup attachement to the RootComponent
-	if (!StaticMeshComponent)
-	{
-		StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-		StaticMeshComponent->SetupAttachment(Root);
 	}
 
 	this->SetUp();

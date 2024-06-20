@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float NewEnemySpawnRadius = 300;
 
+	virtual float GetAttackDamage() const;
+	virtual float GetMaxHealth() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,4 +40,9 @@ private:
 	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
 	TSubclassOf<ABubble> BubbleClass;
 
+	UPROPERTY(EditAnywhere)
+	float MultiplierAttackDamage = 10;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MultiplierMaxHealth = 50;
 };

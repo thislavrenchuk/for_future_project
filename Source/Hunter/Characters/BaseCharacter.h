@@ -12,10 +12,14 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
 #include "Hunter/Bow.h"
+#include "Hunter/BabyContainer.h"
 #include "BaseCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeathEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReceiveDamageEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStabbingEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FShootingEvent);
+
 
 UCLASS()
 class HUNTER_API ABaseCharacter : public ACharacter
@@ -25,21 +29,23 @@ class HUNTER_API ABaseCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
-
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	// void ShootAsPawn();
 
-	void ShootAsPawn();
-
+	/************************************************************************/
+	/* CUSTOM EVENTS                                                        */
+	/************************************************************************/
 	UPROPERTY(BlueprintAssignable)
 	FDeathEvent OnDeathEvent;
 	UPROPERTY(BlueprintAssignable)
 	FReceiveDamageEvent OnReceiveDamageEvent;
+	UPROPERTY(BlueprintAssignable)
+	FStabbingEvent OnStabbingEvent;
+	UPROPERTY(BlueprintAssignable)
+	FShootingEvent OnShootingEvent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -99,6 +105,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
 	TSubclassOf<ABow> WeaponClass;
+
+	UPROPERTY(EditDefaultsOnly) // EditDefaultsOnly means this value cannot be changed during runtime
+	TSubclassOf<ABabyContainer> BabyContainerClass;
+
+	UPROPERTY()
+	ABabyContainer* BabyContainer;
 
 	/************************************************************************/
 	/* ACTION                                                               */

@@ -12,6 +12,8 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReceiveDamageEvent);
 
 UCLASS()
 class HUNTER_API ABaseEnemy : public ACharacter
@@ -22,8 +24,16 @@ public:
 	// Sets default values for this character's properties
 	ABaseEnemy();
 
+	/************************************************************************/
+	/* CUSTOM EVENTS                                                        */
+	/************************************************************************/
 	UPROPERTY(BlueprintAssignable)
 	FAttackEvent OnAttackEvent;
+	UPROPERTY(BlueprintAssignable)
+	FOnDeathEvent OnDeathEvent;
+	UPROPERTY(BlueprintAssignable)
+	FOnReceiveDamageEvent OnReceiveDamageEvent;
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -42,6 +52,7 @@ public:
 	virtual float GetHealth();
 	virtual void Attack();
 	virtual float GetAttackDamage() const;
+	virtual float GetMaxHealth() const;
 
 private:
 

@@ -21,7 +21,6 @@ EBTNodeResult::Type UBTTask_UpdateLastKnownHealth::ExecuteTask(UBehaviorTreeComp
         if (AIController->GetPawn()) {
             ABaseEnemy* Enemy = Cast<ABaseEnemy>(AIController->GetPawn());  
             OwnerComp.GetBlackboardComponent()->SetValueAsFloat(GetSelectedBlackboardKey(), Enemy->GetHealth());
-            UE_LOG(LogTemp, Warning, TEXT("UBTTask_UpdateLastKnownHealth: apparently succeeded..."));
             return EBTNodeResult::Succeeded;
         }
         else

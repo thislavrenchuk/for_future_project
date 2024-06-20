@@ -3,19 +3,13 @@
 
 void UStabNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, TEXT("Custom AnimNotify triggered!"));
-	}
     // do some damage 
     // while animation is playing check if damage has been dealt
     // if socket ArrowTip touches enemy space, deal damage
     FVector ArrowTipLocation = MeshComp->GetSocketLocation("ArrowTip");
     FVector ArrowBaseLocation = MeshComp->GetSocketLocation("ArrowEnd");
     FVector DamageAngle = (ArrowBaseLocation - ArrowTipLocation);
-
-    // TODO remove debug lines
-    DrawDebugDirectionalArrow(GetWorld(), ArrowBaseLocation, ArrowTipLocation, 120.f, FColor::Magenta, true, -1.f, 0, 5.f);
+    StabDamageType = UDamageType::StaticClass();
 
     // Ignore certain actors
     FCollisionQueryParams Params;
